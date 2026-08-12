@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import PageHeader from "@/components/layout/PageHeader";
+import PageTitle from "@/components/layout/PageTitle";
 import CreateTaskModal from "@/components/tasks/TaskModal";
 import CustomDropdown from "@/components/ui/CustomDropdown";
 import { canManageTasks } from "@/utils/roleConfig";
@@ -145,6 +146,7 @@ export default function TaskDetailPage({ params }: TaskDetailPageProps) {
 
   return (
     <div className="pb-16 max-w-7xl mx-auto">
+      <PageTitle title={task.title} />
       <PageHeader
         title={task.title}
         subtitle={project?.name || "Project Task"}

@@ -6,6 +6,7 @@ import { useAuthStore } from "@/lib/stores/useAuthStore";
 import { motion } from "framer-motion";
 import { Zap, ArrowRight, Loader2, AlertCircle, Mail, Lock } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import NexusLogo from "@/components/ui/NexusLogo";
 
 const HEADLINE_LINE_1 = "Project management built for";
 const HEADLINE_LINE_2 = "teams that ship fast.";
@@ -132,12 +133,7 @@ export default function LoginPage() {
         </div>
 
         <div className="absolute bottom-8 left-12 xl:left-20">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted/50 text-sm font-bold text-muted-foreground"
-            style={{ fontFamily: "var(--font-outfit), sans-serif" }}
-          >
-            N
-          </div>
+          <NexusLogo size="lg" />
         </div>
       </motion.div>
 

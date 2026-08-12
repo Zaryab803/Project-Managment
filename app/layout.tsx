@@ -26,7 +26,10 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Nexus | Project Management Platform",
+  title: {
+    default: "Nexus",
+    template: "Nexus | %s",
+  },
   description: "A secure project management and team administration application",
 };
 

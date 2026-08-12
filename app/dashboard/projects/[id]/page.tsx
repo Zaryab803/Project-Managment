@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft, Plus, List, Kanban, Search } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import PageHeader from "@/components/layout/PageHeader";
+import PageTitle from "@/components/layout/PageTitle";
 import CustomDropdown from "@/components/ui/CustomDropdown";
 import TaskBoard from "@/components/tasks/TaskBoard";
 import { canManageTasks as userCanManageTasks } from "@/utils/roleConfig";
@@ -135,6 +136,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
 
   return (
     <div className="pb-16 max-w-7xl mx-auto">
+      <PageTitle title={project.name} />
       <PageHeader
         title={project.name}
         subtitle={`${openTasks} open · ${totalTasks} total · ${overallProgress}% complete`}

@@ -6,6 +6,10 @@ import ManagerDashboard from "@/components/dashboard/ManagerDashboard";
 import MemberDashboard from "@/components/dashboard/MemberDashboard";
 import { UserRole } from "@/types";
 
+export const metadata = {
+  title: "Dashboard",
+};
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {

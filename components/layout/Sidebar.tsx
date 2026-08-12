@@ -13,6 +13,7 @@ import {
 import { useAuthStore } from "@/lib/stores/useAuthStore";
 import UserAvatar from "@/components/ui/UserAvatar";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import NexusLogo from "@/components/ui/NexusLogo";
 
 interface SidebarProps {
   role: "admin" | "manager" | "employee" | string;
@@ -77,9 +78,7 @@ export default function Sidebar({
       <div>
         <div className="flex items-center justify-between gap-2 p-6">
           <div className="flex min-w-0 items-center space-x-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600 font-bold text-white shadow-md">
-              N
-            </div>
+            <NexusLogo size="md" />
             <div className="min-w-0">
               <h1 className="truncate text-lg font-bold tracking-wide text-sidebar-foreground">
                 Nexus
