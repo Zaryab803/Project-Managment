@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { createBrowserClient } from '@supabase/ssr'
+import { supabase } from '@/lib/supabase/supabaseClient'
 
 export interface AuthUser {
   id: string
@@ -20,12 +20,6 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => {
-  // Initialize the SSR-compatible browser client
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
   return {
     currentUser: null,
     isLoading: true,

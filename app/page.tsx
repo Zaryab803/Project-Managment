@@ -25,10 +25,10 @@ export default function Home() {
   }, [currentUser, isLoading, router])
 
   return (
-    <div className="min-h-screen bg-[#090d16] flex items-center justify-center text-white">
+    <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
-        <p className="text-sm text-slate-400 font-medium">Loading Nexus Workspace...</p>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
+        <p className="text-sm font-medium text-muted-foreground">Loading Nexus Workspace...</p>
       </div>
     </div>
   )

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useUserManagementStore } from "@/lib/stores/useUserManagementStore";
 import { useAuthStore } from "@/lib/stores/useAuthStore";
 import { UserRole } from "@/types";
-import { Search, UserPlus, X, Check, ChevronDown } from "lucide-react";
+import { Search, UserPlus, X } from "lucide-react";
 import { getRoleConfig } from "@/utils/roleConfig";
 import Loader from "@/components/ui/Loader";
+import UserAvatar from "@/components/ui/UserAvatar";
+import PageHeader from "@/components/layout/PageHeader";
+import CustomDropdown from "@/components/ui/CustomDropdown"; // Import the component
 
 export default function UserManagementPage() {
   const { users, loading, fetchUsers, addUser, updateUser, deleteUser, error } = useUserManagementStore();
@@ -15,10 +18,8 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("All roles");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,14 +34,6 @@ export default function UserManagementPage() {
   useEffect(() => {
     fetchUsers();
     initializeAuth();
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [fetchUsers, initializeAuth]);
 
   const handleOpenAddModal = () => {
@@ -115,52 +108,36 @@ export default function UserManagementPage() {
     return matchesSearch && matchesRole;
   });
 
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    const parts = name.trim().split(" ");
-    return parts.length > 1
-      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
-      : parts[0].substring(0, 2).toUpperCase();
-  };
-
   const roleOptions = ["All roles", "Administrator", "Project Manager", "Team Member"];
 
   if (loading && users.length === 0) {
     return <Loader fullScreen text="Loading User Management..." size={36} />;
   }
 
-  const currentUserRoleStyle = getRoleConfig(currentUser?.role);
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            User Management
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{users.length} total users</p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleOpenAddModal}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors cursor-pointer"
-          >
-            <UserPlus className="w-4 h-4" />
-            Add user
-          </button>
-          
-          <div 
-            title={currentUser?.name || "User"}
-            className={`w-9 h-9 rounded-full ${currentUserRoleStyle.avatarClass} text-white font-semibold flex items-center justify-center text-xs shadow-sm`}
-          >
-            {getInitials(currentUser?.name || "User")}
-          </div>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        title="User Management"
+        subtitle={`${users.length} total users`}
+        actions={
+          <>
+            <button
+              onClick={handleOpenAddModal}
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition-colors cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4" />
+              Add user
+            </button>
+            <UserAvatar
+              name={currentUser?.name || "User"}
+              role={currentUser?.role}
+              size="md"
+            />
+          </>
+        }
+      />
 
-      {/* Filters Bar */}
+      <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card border border-border/60 p-3 rounded-2xl shadow-xs">
         <div className="relative w-full">
           <Search className="absolute left-3.5 top-3 w-4 h-4 text-muted-foreground" />
@@ -173,40 +150,13 @@ export default function UserManagementPage() {
           />
         </div>
 
-        {/* Custom Dropdown */}
-        <div className="relative w-full sm:w-48" ref={dropdownRef}>
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full flex items-center justify-between px-3.5 py-2 bg-card border border-border/60 rounded-xl text-sm text-foreground focus:outline-none focus:border-indigo-500 cursor-pointer transition-colors"
-          >
-            <span>{roleFilter}</span>
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-          </button>
-
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-full sm:w-56 bg-card border border-border/80 rounded-2xl shadow-xl py-2 z-30 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Filter Role
-              </div>
-              <div className="h-px bg-border/40 my-1"></div>
-              {roleOptions.map((role) => (
-                <button
-                  key={role}
-                  onClick={() => {
-                    setRoleFilter(role);
-                    setIsDropdownOpen(false);
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-left hover:bg-muted/40 transition-colors cursor-pointer"
-                >
-                  <span className={roleFilter === role ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"}>
-                    {role}
-                  </span>
-                  {roleFilter === role && <Check className="w-4 h-4 text-indigo-500" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Clean, Reusable Custom Dropdown Component */}
+        <CustomDropdown
+          label="Filter Role"
+          options={roleOptions}
+          value={roleFilter}
+          onChange={setRoleFilter}
+        />
       </div>
 
       {/* Table */}
@@ -234,9 +184,7 @@ export default function UserManagementPage() {
                   return (
                     <tr key={user.id} className="hover:bg-muted/35 transition-colors">
                       <td className="py-4 px-6 flex items-center gap-3.5">
-                        <div className={`w-9 h-9 rounded-full ${roleStyle.avatarClass} text-white font-semibold flex items-center justify-center text-xs shadow-sm shrink-0`}>
-                          {getInitials(user.name)}
-                        </div>
+                        <UserAvatar name={user.name} role={user.role} size="md" />
                         <div className="overflow-hidden">
                           <p className="font-medium text-foreground truncate">{user.name}</p>
                           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
@@ -277,7 +225,9 @@ export default function UserManagementPage() {
         </div>
       </div>
 
-      {/* Add/Edit User Modal */}
+      </div>
+
+      {/* Add/Edit User Modal (unchanged) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div className="bg-card border border-border/80 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -338,14 +288,16 @@ export default function UserManagementPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Role</label>
-                  <select
+                  <CustomDropdown
+                    label="Role"
+                    options={["Team Member", "Project Manager"]}
                     value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
-                    className="w-full px-3 py-2.5 bg-background border border-border/80 rounded-xl text-sm focus:outline-none cursor-pointer"
-                  >
-                    <option value="Team Member">Team Member</option>
-                    <option value="Project Manager">Project Manager</option>
-                  </select>
+                    onChange={(role) =>
+                      setFormData({ ...formData, role: role as UserRole })
+                    }
+                    className="w-full"
+                    menuClassName="z-[60]"
+                  />
                 </div>
 
                 <div>

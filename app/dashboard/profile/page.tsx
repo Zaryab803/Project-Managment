@@ -5,6 +5,8 @@ import { useAuthStore } from "@/lib/stores/useAuthStore";
 import { useUserManagementStore } from "@/lib/stores/useUserManagementStore";
 import { getRoleConfig } from "@/utils/roleConfig";
 import Loader from "@/components/ui/Loader";
+import UserAvatar from "@/components/ui/UserAvatar";
+import PageHeader from "@/components/layout/PageHeader";
 import { X, Edit3 } from "lucide-react";
 import toast from "react-hot-toast"; // <-- 1. Import toast
 
@@ -41,14 +43,6 @@ export default function ProfilePage() {
   }
 
   const roleStyle = getRoleConfig(currentUser?.role);
-
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    const parts = name.trim().split(" ");
-    return parts.length > 1
-      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
-      : parts[0].substring(0, 2).toUpperCase();
-  };
 
   const handleOpenModal = () => {
     setFormData({
@@ -110,23 +104,22 @@ export default function ProfilePage() {
     : "January 2022";
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          My Profile
-        </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Manage your account information</p>
-      </div>
+    <div>
+      <PageHeader
+        title="My Profile"
+        subtitle="Manage your account information"
+      />
 
-      {/* Profile Card */}
+      <div className="space-y-6">
       <div className="bg-card border border-border/60 rounded-2xl shadow-xs max-w-3xl overflow-hidden">
         {/* Top Section */}
         <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60">
           <div className="flex items-center gap-4">
-            <div className={`w-16 h-16 rounded-full ${roleStyle.avatarClass} text-white font-bold flex items-center justify-center text-lg shadow-sm shrink-0`}>
-              {getInitials(currentUser?.name || "User")}
-            </div>
+            <UserAvatar
+              name={currentUser?.name || "User"}
+              role={currentUser?.role}
+              size="lg"
+            />
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h2 className="text-xl font-bold text-foreground">{currentUser?.name || "User Name"}</h2>
@@ -176,6 +169,8 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      </div>
+
       {/* Edit Profile Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
@@ -183,9 +178,11 @@ export default function ProfilePage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border/60">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full ${roleStyle.avatarClass} text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0`}>
-                  {getInitials(formData.name || "User")}
-                </div>
+                <UserAvatar
+                  name={formData.name || "User"}
+                  role={currentUser?.role}
+                  size="md"
+                />
                 <div>
                   <h3 className="font-semibold text-foreground text-base leading-none">
                     {formData.name || "User Name"}

@@ -1,6 +1,11 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
 export interface ParticleTextProps {
   text?: string;
+  /** Render multiple lines in one canvas — avoids overlap from stacked instances */
+  lines?: string[];
+  lineHeight?: number;
+  align?: 'left' | 'center';
+  verticalAlign?: 'top' | 'center';
   particleSize?: number;
   density?: number;
   color?: string;
@@ -91,6 +96,10 @@ const waitForFonts = async (font: string): Promise<void> => {
 
 const ParticleText = ({
   text = 'React Bits',
+  lines,
+  lineHeight = 1.22,
+  align = 'center',
+  verticalAlign = 'center',
   particleSize = 2,
   density = 4,
   color = '#ffffff',
@@ -109,6 +118,8 @@ const ParticleText = ({
   className = '',
   style
 }: ParticleTextProps) => {
+  const accessibleText =
+    lines?.join(' ') || text?.replace(/\n/g, ' ') || 'Particle text';
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -182,7 +193,7 @@ const ParticleText = ({
       ctx.clearRect(0, 0, width, height);
 
       if (glow && !reducedMotion) {
-        ctx.shadowBlur = particleSize * 3;
+        ctx.shadowBlur = Math.min(particleSize * 1.5, 6);
         ctx.shadowColor = highlightColor;
       } else {
         ctx.shadowBlur = 0;
@@ -273,27 +284,56 @@ const ParticleText = ({
       const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
       if (!offCtx) return;
 
-      const content = String(text || ' ');
+      const lineContents =
+        lines && lines.length > 0
+          ? lines
+          : String(text || ' ')
+              .split('\n')
+              .map((line) => line.trim())
+              .filter(Boolean);
+
+      const contentLines = lineContents.length > 0 ? lineContents : [' '];
       const maxTextWidth = width * 0.92;
       offCtx.font = font;
-      let metrics = offCtx.measureText(content);
-      const measuredWidth = Math.max(1, metrics.width);
-      if (measuredWidth > maxTextWidth) {
-        resolvedSize = Math.max(18, resolvedSize * (maxTextWidth / measuredWidth));
+
+      const measureLines = () =>
+        contentLines.map((line) => {
+          const metrics = offCtx.measureText(line);
+          const left = Math.ceil(metrics.actualBoundingBoxLeft || 0);
+          const right = Math.ceil(metrics.actualBoundingBoxRight || metrics.width);
+          const ascent = Math.ceil(metrics.actualBoundingBoxAscent || resolvedSize * 0.78);
+          const descent = Math.ceil(metrics.actualBoundingBoxDescent || resolvedSize * 0.22);
+          return {
+            line,
+            width: Math.max(1, left + right),
+            left,
+            ascent,
+            descent,
+          };
+        });
+
+      let measured = measureLines();
+      let maxLineWidth = Math.max(...measured.map((entry) => entry.width), 1);
+
+      if (maxLineWidth > maxTextWidth) {
+        resolvedSize = Math.max(18, resolvedSize * (maxTextWidth / maxLineWidth));
         font = `${fontWeight} ${resolvedSize}px ${resolvedFamily}`;
         await waitForFonts(font);
         if (currentBuild !== buildId) return;
         offCtx.font = font;
-        metrics = offCtx.measureText(content);
+        measured = measureLines();
+        maxLineWidth = Math.max(...measured.map((entry) => entry.width), 1);
       }
 
-      const left = Math.ceil(metrics.actualBoundingBoxLeft || 0);
-      const right = Math.ceil(metrics.actualBoundingBoxRight || metrics.width);
-      const ascent = Math.ceil(metrics.actualBoundingBoxAscent || resolvedSize * 0.78);
-      const descent = Math.ceil(metrics.actualBoundingBoxDescent || resolvedSize * 0.22);
       const padding = Math.max(12, Math.ceil(resolvedSize * 0.08));
-      const textWidth = Math.max(1, left + right);
-      const textHeight = Math.max(1, ascent + descent);
+      const lineStep = Math.max(resolvedSize * lineHeight, resolvedSize * 1.05);
+      const blockAscent = measured[0]?.ascent ?? resolvedSize * 0.78;
+      const blockDescent = measured[measured.length - 1]?.descent ?? resolvedSize * 0.22;
+      const textWidth = maxLineWidth;
+      const textHeight = Math.max(
+        1,
+        blockAscent + blockDescent + lineStep * Math.max(0, contentLines.length - 1)
+      );
 
       offscreen.width = textWidth + padding * 2;
       offscreen.height = textHeight + padding * 2;
@@ -302,19 +342,31 @@ const ParticleText = ({
       offCtx.textAlign = 'left';
       offCtx.textBaseline = 'alphabetic';
       offCtx.fillStyle = '#ffffff';
-      offCtx.fillText(content, padding - left, padding + ascent);
+
+      measured.forEach((entry, index) => {
+        const y = padding + blockAscent + index * lineStep;
+        offCtx.fillText(entry.line, padding - entry.left, y);
+      });
 
       const imageData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
       const targets: Target[] = [];
-      const step = Math.max(2, Math.floor(density));
+      const step = Math.max(1, Math.floor(density));
+      const offsetX =
+        align === 'left'
+          ? 0
+          : Math.max(0, Math.floor(width / 2 - offscreen.width / 2));
+      const offsetY =
+        verticalAlign === 'top'
+          ? 4
+          : Math.max(0, Math.floor(height / 2 - offscreen.height / 2));
 
       for (let y = 0; y < offscreen.height; y += step) {
         for (let x = 0; x < offscreen.width; x += step) {
           const alpha = imageData.data[(y * offscreen.width + x) * 4 + 3];
           if (alpha > 40) {
             targets.push({
-              x: width / 2 - offscreen.width / 2 + x,
-              y: height / 2 - offscreen.height / 2 + y,
+              x: offsetX + x,
+              y: offsetY + y,
               alpha: alpha / 255
             });
           }
@@ -428,6 +480,10 @@ const ParticleText = ({
     };
   }, [
     text,
+    lines,
+    lineHeight,
+    align,
+    verticalAlign,
     particleSize,
     density,
     color,
@@ -450,10 +506,10 @@ const ParticleText = ({
       ref={containerRef}
       className={`relative block h-full min-h-[240px] w-full overflow-hidden touch-none ${className}`}
       style={style}
-      aria-label={text}
+      aria-label={accessibleText}
     >
       <canvas ref={canvasRef} className="absolute inset-0 block h-full w-full" aria-hidden="true" />
-      <span className="sr-only">{text}</span>
+      <span className="sr-only">{accessibleText}</span>
     </div>
   );
 };
