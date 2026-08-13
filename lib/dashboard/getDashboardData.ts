@@ -14,6 +14,7 @@ export interface DashboardTask {
   assigneeId: string | null;
   assigneeName: string | null;
   assigneeRole: string | null;
+  createdAt: string | null;
 }
 
 export interface DashboardProject {
@@ -119,7 +120,7 @@ export async function getDashboardData(
   const { data: allTasks } = await supabaseAdmin
     .from("tasks")
     .select(`
-      id, title, description, project_id, status, priority, due_date, assignee_id,
+      id, title, description, project_id, status, priority, due_date, assignee_id, created_at,
       assignee:profiles!assignee_id(id, name, role)
     `);
 
@@ -154,6 +155,7 @@ export async function getDashboardData(
     assigneeId: t.assignee_id,
     assigneeName: t.assignee?.name || null,
     assigneeRole: t.assignee?.role || null,
+    createdAt: t.created_at || null,
   }));
 
   if (profileRole === "Project Manager") {

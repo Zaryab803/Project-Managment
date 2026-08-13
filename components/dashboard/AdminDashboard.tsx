@@ -15,6 +15,7 @@ import {
   DashboardData,
   getDeadlineLabel,
 } from "@/lib/dashboard/getDashboardData";
+import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
 
 function StatCard({
   label,
@@ -138,6 +139,8 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
           iconClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
         />
       </div>
+
+      <DashboardAnalytics data={data} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card border border-border/50 rounded-2xl p-6 shadow-sm space-y-4">
