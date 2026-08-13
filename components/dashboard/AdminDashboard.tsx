@@ -16,6 +16,7 @@ import {
   getDeadlineLabel,
 } from "@/lib/dashboard/getDashboardData";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
+import AnimatedSection, { AnimatedItem } from "@/components/motion/AnimatedSection";
 
 function StatCard({
   label,
@@ -108,7 +109,8 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
 
       <div className="space-y-6">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <AnimatedSection className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <AnimatedItem>
         <StatCard
           label="Total Projects"
           value={data.stats.totalProjects}
@@ -116,6 +118,8 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
           icon={<Briefcase className="w-5 h-5" />}
           iconClass="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
         />
+        </AnimatedItem>
+        <AnimatedItem>
         <StatCard
           label="Total Tasks"
           value={data.stats.totalTasks}
@@ -123,6 +127,8 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
           icon={<CheckSquare className="w-5 h-5" />}
           iconClass="bg-purple-500/10 text-purple-600 dark:text-purple-400"
         />
+        </AnimatedItem>
+        <AnimatedItem>
         <StatCard
           label="Overdue Tasks"
           value={data.stats.overdueTasks}
@@ -131,6 +137,8 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
           iconClass="bg-rose-500/10 text-rose-600 dark:text-rose-400"
           valueClass="text-rose-600"
         />
+        </AnimatedItem>
+        <AnimatedItem>
         <StatCard
           label="Team Members"
           value={data.stats.teamMembers}
@@ -138,11 +146,14 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
           icon={<Users className="w-5 h-5" />}
           iconClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
         />
-      </div>
+        </AnimatedItem>
+      </AnimatedSection>
 
+      <AnimatedSection>
       <DashboardAnalytics data={data} />
+      </AnimatedSection>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <AnimatedSection className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card border border-border/50 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-foreground">Project Overview</h2>
@@ -259,8 +270,9 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
             </div>
           )}
         </div>
-      </div>
+      </AnimatedSection>
 
+      <AnimatedSection>
       <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-foreground">Team Overview</h2>
@@ -327,6 +339,7 @@ export default function AdminDashboard({ data }: { data: DashboardData }) {
           </table>
         </div>
       </div>
+      </AnimatedSection>
       </div>
     </div>
   );

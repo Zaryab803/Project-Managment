@@ -10,6 +10,8 @@ import Loader from "@/components/ui/Loader";
 import CustomDropdown from "@/components/ui/CustomDropdown";
 import UserAvatar from "@/components/ui/UserAvatar";
 import PageHeader from "@/components/layout/PageHeader";
+import MotionCard from "@/components/motion/MotionCard";
+import AnimatedSection, { AnimatedItem } from "@/components/motion/AnimatedSection";
 import { canManageProjects } from "@/utils/roleConfig";
 import {
   getProjectPriorityBadgeClass,
@@ -127,7 +129,7 @@ export default function ProjectsPage() {
           <p className="text-muted-foreground text-sm">No projects found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <AnimatedSection className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredProjects.map((project) => {
             const members = project.project_members || [];
             const progress = project.progress || 0;
@@ -136,10 +138,10 @@ export default function ProjectsPage() {
             const completedTasks = totalTasks - openTasks;
 
             return (
-              <div
-                key={project.id}
+              <AnimatedItem key={project.id}>
+              <MotionCard
                 onClick={() => router.push(`/dashboard/projects/${project.id}`)}
-                className="bg-card border border-border/60 rounded-3xl p-6 shadow-xs hover:border-indigo-500/40 transition-[border-color,box-shadow] cursor-pointer flex flex-col justify-between space-y-6"
+                className="bg-card border border-border/60 rounded-3xl p-6 shadow-xs hover:border-indigo-500/40 transition-[border-color,box-shadow] cursor-pointer flex flex-col justify-between space-y-6 w-full text-left"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-4">
@@ -247,10 +249,11 @@ export default function ProjectsPage() {
                     )}
                   </div>
                 </div>
-              </div>
+              </MotionCard>
+              </AnimatedItem>
             );
           })}
-        </div>
+        </AnimatedSection>
       )}
 
       </div>

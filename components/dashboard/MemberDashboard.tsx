@@ -13,6 +13,7 @@ import {
   getDeadlineLabel,
 } from "@/lib/dashboard/getDashboardData";
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
+import AnimatedSection, { AnimatedItem } from "@/components/motion/AnimatedSection";
 
 function StatCard({
   label,
@@ -97,41 +98,43 @@ export default function MemberDashboard({ data }: { data: DashboardData }) {
 
       <div className="space-y-6">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
+      <AnimatedSection className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <AnimatedItem><StatCard
           label="My Tasks"
           value={data.stats.totalTasks}
           sub={`${data.stats.completedTasks} done`}
           icon={<ClipboardList className="w-5 h-5" />}
           iconClass="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-        />
-        <StatCard
+        /></AnimatedItem>
+        <AnimatedItem><StatCard
           label="In Progress"
           value={data.stats.inProgressTasks}
           sub="currently working"
           icon={<Zap className="w-5 h-5" />}
           iconClass="bg-blue-500/10 text-blue-600 dark:text-blue-400"
-        />
-        <StatCard
+        /></AnimatedItem>
+        <AnimatedItem><StatCard
           label="In Review"
           value={data.stats.inReviewTasks}
           sub="awaiting feedback"
           icon={<Eye className="w-5 h-5" />}
           iconClass="bg-purple-500/10 text-purple-600 dark:text-purple-400"
-        />
-        <StatCard
+        /></AnimatedItem>
+        <AnimatedItem><StatCard
           label="Overdue"
           value={data.stats.overdueTasks}
           sub="needs attention"
           icon={<Clock className="w-5 h-5" />}
           iconClass="bg-rose-500/10 text-rose-600 dark:text-rose-400"
           valueClass="text-rose-600"
-        />
-      </div>
+        /></AnimatedItem>
+      </AnimatedSection>
 
+      <AnimatedSection>
       <DashboardAnalytics data={data} />
+      </AnimatedSection>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <AnimatedSection className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
           <h2 className="font-semibold text-foreground">My Active Tasks</h2>
           {data.activeTasks.length === 0 ? (
@@ -257,7 +260,7 @@ export default function MemberDashboard({ data }: { data: DashboardData }) {
             )}
           </div>
         </div>
-      </div>
+      </AnimatedSection>
       </div>
     </div>
   );

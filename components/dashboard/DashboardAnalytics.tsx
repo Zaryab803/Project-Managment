@@ -16,6 +16,7 @@ import {
   Area,
 } from "recharts";
 import { DashboardData } from "@/lib/dashboard/getDashboardData";
+import FadeIn from "@/components/motion/FadeIn";
 import {
   getCompletionRate,
   getProjectProgressChartData,
@@ -108,7 +109,7 @@ export default function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
   const hasProjects = data.projects.length > 0;
 
   return (
-    <div className="space-y-4">
+    <FadeIn className="space-y-4">
       <div className="flex items-end justify-between gap-4">
         <div>
           <h2 className="font-semibold text-foreground">Analytics Overview</h2>
@@ -400,6 +401,6 @@ export default function DashboardAnalytics({ data }: DashboardAnalyticsProps) {
           </ResponsiveContainer>
         )}
       </ChartCard>
-    </div>
+    </FadeIn>
   );
 }

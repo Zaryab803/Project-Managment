@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Sidebar from "@/components/layout/Sidebar";
+import PageTransition from "@/components/motion/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { toSidebarRole } from "@/utils/roleConfig";
 import { UserRole } from "@/types";
@@ -39,7 +40,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
       {/* Main Content Area with Internal Scrolling */}
       <div className="flex flex-col flex-1 h-full overflow-y-auto">
-        <main className="p-8 flex-1">{children}</main>
+        <main className="p-8 flex-1">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   );

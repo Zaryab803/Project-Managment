@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +15,7 @@ import { useAuthStore } from "@/lib/stores/useAuthStore";
 import UserAvatar from "@/components/ui/UserAvatar";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import NexusLogo from "@/components/ui/NexusLogo";
+import { easeTransition, staggerContainerFast } from "@/lib/motion";
 
 interface SidebarProps {
   role: "admin" | "manager" | "employee" | string;
@@ -68,15 +70,27 @@ export default function Sidebar({
     employee: "TEAM MEMBER",
   };
 
+  const reduceMotion = useReducedMotion();
+
   const handleSignOut = async () => {
     await signOut();
     router.push("/login");
   };
 
   return (
-    <aside className="flex w-64 flex-col justify-between border-r border-sidebar-border bg-sidebar-bg text-sidebar-foreground">
+    <motion.aside
+      initial={reduceMotion ? false : { opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ ...easeTransition, duration: 0.5 }}
+      className="flex w-64 flex-col justify-between border-r border-sidebar-border bg-sidebar-bg text-sidebar-foreground"
+    >
       <div>
-        <div className="flex items-center justify-between gap-2 p-6">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...easeTransition, delay: 0.1 }}
+          className="flex items-center justify-between gap-2 p-6"
+        >
           <div className="flex min-w-0 items-center space-x-3">
             <NexusLogo size="md" />
             <div className="min-w-0">
@@ -89,31 +103,56 @@ export default function Sidebar({
             </div>
           </div>
           <ThemeToggle variant="sidebar" />
-        </div>
+        </motion.div>
 
-        <nav className="mt-4 space-y-1 px-4">
-          {navigation.map((item) => {
+        <motion.nav
+          initial="hidden"
+          animate="visible"
+          variants={reduceMotion ? undefined : staggerContainerFast}
+          className="mt-4 space-y-1 px-4"
+        >
+          {navigation.map((item, index) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
             return (
-              <Link
+              <motion.div
                 key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                    : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                }`}
+                variants={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        hidden: { opacity: 0, x: -12 },
+                        visible: {
+                          opacity: 1,
+                          x: 0,
+                          transition: { ...easeTransition, delay: index * 0.04 },
+                        },
+                      }
+                }
               >
-                <Icon className="h-5 w-5" />
-                {item.name}
-              </Link>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                      : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.name}
+                </Link>
+              </motion.div>
             );
           })}
-        </nav>
+        </motion.nav>
       </div>
 
-      <div className="border-t border-sidebar-border p-4">
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...easeTransition, delay: 0.25 }}
+        className="border-t border-sidebar-border p-4"
+      >
         <div className="mb-3 flex items-center space-x-3">
           <UserAvatar name={userName} role={userRole} size="md" />
           <div className="overflow-hidden">
@@ -130,7 +169,7 @@ export default function Sidebar({
           <LogOut className="h-4 w-4" />
           Sign out
         </button>
-      </div>
-    </aside>
+      </motion.div>
+    </motion.aside>
   );
 }

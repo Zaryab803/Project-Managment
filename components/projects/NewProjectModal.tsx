@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase/supabaseClient";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import CustomDropdown from "@/components/ui/CustomDropdown";
+import MotionModal from "@/components/motion/MotionModal";
 
 interface UserProfile {
     id: string;
@@ -90,8 +91,6 @@ export default function NewProjectModal({ isOpen, onClose, projectToEdit }: NewP
         }
     }, [projectToEdit, isOpen]);
 
-    if (!isOpen) return null;
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.name.trim()) {
@@ -140,8 +139,8 @@ export default function NewProjectModal({ isOpen, onClose, projectToEdit }: NewP
     }));
 
     return (
-        <div className="fixed inset-0 bg-background/85 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-card border border-border/60 rounded-3xl w-full max-w-lg p-6 shadow-xl space-y-6 relative max-h-[90vh] flex flex-col my-auto">
+        <MotionModal isOpen={isOpen} onClose={onClose} className="max-w-lg">
+            <div className="relative my-auto flex max-h-[90vh] flex-col space-y-6 rounded-3xl border border-border/60 bg-card p-6 shadow-xl">
 
                 {/* Header */}
                 <div className="flex items-center justify-between pb-3 border-b border-border/60 shrink-0">
@@ -326,6 +325,6 @@ export default function NewProjectModal({ isOpen, onClose, projectToEdit }: NewP
                     </div>
                 </form>
             </div>
-        </div>
+        </MotionModal>
     );
 }

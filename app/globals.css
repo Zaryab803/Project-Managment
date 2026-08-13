@@ -36,7 +36,7 @@
   --auth-bg: oklch(0.975 0.005 280);
   --auth-panel: oklch(0.96 0.008 280);
   --auth-card: oklch(1 0 0);
-  --auth-input: oklch(0.98 0 0);
+  --auth-input: oklch(0.955 0.006 280);
   --auth-headline-1: #5b21b6;
   --auth-headline-2: #7c3aed;
   --auth-grid: rgba(99, 102, 241, 0.12);
@@ -105,11 +105,12 @@
 
 body {
   background-color: var(--background);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -168,5 +169,40 @@ body {
   }
   html {
     @apply font-sans;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  /* Login form — stable sans-serif + autofill across theme changes */
+  .auth-form,
+  .auth-form label,
+  .auth-form p,
+  .auth-form input,
+  .auth-form button {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .auth-form input {
+    color: var(--foreground);
+    background-color: var(--auth-input);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .auth-form input::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  .auth-form input:-webkit-autofill,
+  .auth-form input:-webkit-autofill:hover,
+  .auth-form input:-webkit-autofill:focus,
+  .auth-form input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--foreground) !important;
+    caret-color: var(--foreground);
+    box-shadow: 0 0 0 1000px var(--auth-input) inset !important;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif !important;
+    transition: background-color 9999s ease-out 0s;
   }
 }

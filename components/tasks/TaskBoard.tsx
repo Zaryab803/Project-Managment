@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Task } from "@/types";
 import UserAvatar from "@/components/ui/UserAvatar";
+import MotionCard from "@/components/motion/MotionCard";
 import {
   TASK_BOARD_COLUMNS,
   getTaskPriorityBadgeClass,
@@ -43,9 +44,8 @@ export default function TaskBoard({ tasks }: TaskBoardProps) {
                 </div>
               ) : (
                 columnTasks.map((task) => (
-                  <button
+                  <MotionCard
                     key={task.id}
-                    type="button"
                     onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
                     className="w-full rounded-xl border border-border/60 bg-card p-4 text-left shadow-xs transition-colors hover:border-indigo-500/30 cursor-pointer"
                   >
@@ -75,7 +75,7 @@ export default function TaskBoard({ tasks }: TaskBoardProps) {
                         {task.priority}
                       </span>
                     </div>
-                  </button>
+                  </MotionCard>
                 ))
               )}
             </div>

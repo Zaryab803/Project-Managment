@@ -8,6 +8,7 @@ import { Task } from "@/types";
 import { X, Calendar, Flag, User, Layers, FileText, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import CustomDropdown from "@/components/ui/CustomDropdown";
+import MotionModal from "@/components/motion/MotionModal";
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -75,8 +76,6 @@ export default function TaskModal({
     }
   }, [isOpen, projectId, taskToEdit, initializeAuth]);
 
-  if (!isOpen) return null;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
@@ -128,8 +127,8 @@ export default function TaskModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-      <div className="bg-card border border-border/60 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <MotionModal isOpen={isOpen} onClose={onClose} className="max-w-xl">
+      <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-2xl">
         <div className="flex items-center justify-between px-6 py-5 border-b border-border/60">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-indigo-600/10 text-indigo-500 flex items-center justify-center font-bold text-sm">
@@ -275,6 +274,6 @@ export default function TaskModal({
           </div>
         </form>
       </div>
-    </div>
+    </MotionModal>
   );
 }
